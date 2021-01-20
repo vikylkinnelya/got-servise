@@ -18,7 +18,6 @@
     border-radius: 50%;
     background: #182731;
     animation: ldio-iimwwmfafl 1s linear infinite;
-    margin: 0 auto;
 }
 
 .ldio-iimwwmfafl div:nth-child(1)>div {
@@ -114,7 +113,6 @@
     height: 200px;
     display: inline-block;
     overflow: hidden;
-    margin: 0 auto;
 }
 
 .ldio-iimwwmfafl {
@@ -124,11 +122,9 @@
     transform: translateZ(0) scale(1);
     backface-visibility: hidden;
     transform-origin: 0 0;
-    margin: 0 auto;
     /* see note above */
 }
 
 .ldio-iimwwmfafl div {
     box-sizing: content-box;
-    margin: 0 auto;
 }

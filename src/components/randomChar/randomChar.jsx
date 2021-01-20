@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import GotServise from '../../servises/gotServise.js';
 import Spinner from '../spinner';
+import ErrorMessage from '../errorMessage'
 
 
 const RandomBlock = styled.div`
@@ -26,7 +27,7 @@ export default class RandomChar extends Component {
     }
 
     gotServise = new GotServise();
-    state = {
+    state = { //по умолчанию сначала
         char: {},
         loading: true,
         error: false
@@ -34,7 +35,8 @@ export default class RandomChar extends Component {
 
     
     updateChar() {
-        const id = Math.floor(Math.random() * 140 + 25); //от 25 до 140 
+        //const id = Math.floor(Math.random() * 140 + 25); //от 25 до 140 
+        const id = 12345678950
         this.gotServise.getCharacter(id) //promise
             .then(this.onCharLoaded)
             .catch(this.onError);
@@ -56,14 +58,16 @@ export default class RandomChar extends Component {
 
     render() {
 
-        const { char, loading } = this.state; //деструктуризация
+        const { char, loading, error } = this.state; //деструктуризация
 
+        const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
-        const content = !loading ? <Viev char={char}/> : null;
+        const content = !(loading || error) ? <Viev char={char}/> : null;
         
 
         return (
-            <RandomBlock className='rounded'>
+            <RandomBlock className='random-block rounded'>
+                {errorMessage}
                 {spinner}
                 {content}
             </RandomBlock>
