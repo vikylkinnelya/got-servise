@@ -1,10 +1,12 @@
-export default class GotServise {
+export default class gotServise {
+
+    //разделяем фронтенд и бэконд
 
     constructor() {
         this._apiBase = 'https://www.anapioficeandfire.com/api'
     }
 
-    async getResourse(url) { //обьявл асинхронн функции 
+    getResourse = async(url) => { //обьявл асинхронн функции 
         const res = await fetch(`${this._apiBase}${url}`); //что нужно подождать
 
         if (!res.ok) {
@@ -14,60 +16,75 @@ export default class GotServise {
         return await res.json(); //что нужно подождат
     };
 
-    async getAllCharacters() {
+    getAllCharacters = async() => {
         // ждём данные из этой части кода
         //берет данные из эйпиай
-        const res = await this.getResourse(`/characters/`);
+        const res = await this.getResourse(`/characters?page=5&pageSize=10`);
         return res.map(this._transformCharacter)
             //трансформирует в необходимый вид
     }
-    async getCharacter(id) {
+    getCharacter = async(id) => {
         const char = await this.getResourse(`/characters/${id}`);
         return this._transformCharacter(char)
     }
-    async getAllHouses() {
+    getAllHouses = async() => {
         const res = await this.getResourse(`/houses/`);
         return res.map(this._transformHouse)
     }
-    async getHouse(id) {
+    getHouse = async(id) => {
         const house = await this.getResourse(`/houses/${id}`);
         return this._transformHouse(house)
-
     }
-    async getAllBooks() {
+    getAllBooks = async() => {
         const res = await this.getResourse(`/books/`);
         return res.map(this._transformCharacter)
     }
-    async getBook(id) {
+    getBook = async(id) => {
         const book = await this.getResourse(`/books/${id}`);
         return this._transformCharacter(book)
+    }
 
+    isSet(data) {
+        if (data) {
+            return data
+        } else {
+            return 'no data :('
+        }
     }
-    _transformCharacter(char) { //берет перс с серв
+    _extractId = (item) => {
+        const idRegExp = /\/([0-9]*)$/;
+        return item.url.match(idRegExp)[1]
+    }
+
+    _transformCharacter = (char) => { //берет перс с серв
         return { //на случай если апи предоставляет корявые данные
-            name: char.name,
-            gender: char.gender,
-            born: char.born || 'there is no data',
-            died: char.died || 'there is no data',
-            culture: char.culture || 'there is no data'
-        }
+            id: this._extractId(char),
+            name: this.isSet(char.name),
+            gender: this.isSet(char.gender),
+            born: this.isSet(char.born),
+            died: this.isSet(char.died),
+            culture: this.isSet(char.culture)
+
+        };
     }
-    _transformHouse(house) {
+    _transformHouse = (house) => {
         return {
-            name: house.name || 'there is no data',
-            region: house.region || 'there is no data',
-            words: house.words || 'there is no data',
-            titles: house.titles || 'there is no data',
-            overlord: house.overlord || 'there is no data',
-            ancestralWeapons: house.ancestralWeapons || 'there is no data'
-        }
+            id: this._extractId(house),
+            name: this.isSet(house.name),
+            region: this.isSet(house.region),
+            words: this.isSet(house.words),
+            titles: this.isSet(house.titles),
+            overlord: this.isSet(house.overlord),
+            ancestralWeapons: this.isSet(house.ancestralWeapons)
+        };
     }
-    _transformBook(book) {
+    _transformBook = (book) => {
         return {
-            name: book.name || 'there is no data',
-            numberOfPages: book.numberOfPages || 'there is no data',
-            publisher: book.publisher || 'there is no data',
-            released: book.released || 'there is no data'
+            id: this._extractId(book),
+            name: this.isSet(book.name),
+            numberOfPages: this.isSet(book.numberOfPages),
+            publisher: this.isSet(book.publisher),
+            released: this.isSet(book.released),
         }
     }
 }

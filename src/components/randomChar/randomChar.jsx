@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import GotServise from '../../servises/gotServise.js';
+import gotServise from '../../servises/gotServise.js';
 import Spinner from '../spinner';
 import ErrorMessage from '../errorMessage'
 
@@ -14,29 +14,30 @@ const RandomBlockTitle = styled.h4`
     margin-bottom: 20px;
     text-align: center;
 `
-
 const Term = styled.span`
     font - weight: bold;
 `
 
 export default class RandomChar extends Component {
 
-    constructor() {
-        super();
-        this.updateChar(); //когда будет создан класс, сразу же будет вызан этот метод
-    }
-
-    gotServise = new GotServise();
+    gotServise = new gotServise();
     state = { //по умолчанию сначала
         char: {},
         loading: true,
         error: false
     }
 
-    
-    updateChar() {
-        //const id = Math.floor(Math.random() * 140 + 25); //от 25 до 140 
-        const id = 12345678950
+    componentDidMount() { //когда все загрузится, начнётся это
+        this.updateChar(); 
+        this.timerId = setInterval(this.updateChar, 1500);
+    }
+    componentWillUnmount() { //
+        clearInterval(this.timerId)
+    }
+
+    updateChar = () => {
+        const id = Math.floor(Math.random() * 140 + 25); //от 25 до 140 
+        //const id = 12345678950
         this.gotServise.getCharacter(id) //promise
             .then(this.onCharLoaded)
             .catch(this.onError);
@@ -59,7 +60,6 @@ export default class RandomChar extends Component {
     render() {
 
         const { char, loading, error } = this.state; //деструктуризация
-
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
         const content = !(loading || error) ? <Viev char={char}/> : null;
