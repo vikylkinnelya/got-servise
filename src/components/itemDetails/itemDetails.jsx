@@ -2,62 +2,67 @@ import React, { Component } from 'react';
 import gotServise from '../../servises/gotServise.js';
 import ErrorMessage from '../errorMessage';
 import Spinner from '../spinner';
-import './charDetails.css';
+import './itemDetails.css';
 
 const Field = ({ item, field, label }) => {
     return (
         <li className="list-group-item d-flex justify-content-between">
             <span className="term">{label}</span> {/* заголовок */}
             <span>
-                {[field]} {/* берем поле из обьекта */}
+                {item[field]} {/* берем поле из обьекта */}
             </span>
         </li>
     )
 }
-export {Field} 
+export { Field }
 
-export default class CharDetails extends Component {
+export default class ItemDetails extends Component {
     gotServise = new gotServise();
+    
     state = {
-        char: null
+        item: null
     }
 
     componentDidMount() {
         //обновление компонента после изменения state
-        this.updateChar()
+        this.updateItem()
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
+        if (this.props.itemId !== prevProps.itemId) {
             //если новое значение не совпадает с предыдущим 
-            this.updateChar() //обновляем
+            this.updateItem() //обновляем
         }
     }
 
-    updateChar() {
-        const { charId, getData } = this.props //деструктур что приходит из пропсов
-        if (!charId) {
+    updateItem() {
+        const { itemId, getData } = this.props //деструктур что приходит из пропсов
+        if (!itemId) {
             return;
         }
-        getData(charId) //обр к серверу по id
-            .then((char) => { //получаем оьект с персонажем
-                this.setState({ char }) //полученн обьект записываем в char
+        getData(itemId) //обр к серверу по id
+            .then((item) => { //получаем оьект с персонажем
+                this.setState({ item }) //полученн обьект записываем в item
             })
     }
 
     render() {
-        if (!this.state.char) {
+        if (!this.state.item) {
             return <span className='select-error'>Please select item in the list</span>
         }
-        const { name, gender, born, died, culture } = this.state.char
-
+        const { item } = this.state;
+        const { name } = item;
         return (
             <div className='char-details rounded'>
                 <h4>
                     {name}
                 </h4>
                 <ul className='list-group list-group-flush'>
-                    {this.props.children}
+                    {
+                        React.Children.map(this.props.children, (child) => {
+                            return React.cloneElement(child, {item})
+                        })
+                    }
                 </ul>
             </div>
         )

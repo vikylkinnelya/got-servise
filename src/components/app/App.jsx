@@ -3,9 +3,9 @@ import { Col, Row, Container, Button } from 'reactstrap';
 import Header from '../header';
 import RandomChar from '../randomChar';
 import ItemList from '../itemList';
-import CharDetails from '../charDetails';
+import ItemDetails from '../itemDetails';
 import ErrorMessage from '../errorMessage';
-import CharPage from '../charPage';
+import {CharacterPage, BooksPage, HousesPage} from '../pages';
 import gotServise from '../../servises/gotServise';
 
 import './app.css';
@@ -16,6 +16,7 @@ export default class App extends Component {
   state = {
     showRandomChar: true, //показывается ли блок со случ персонажами
     error: false //показ ли окно с ошибкой
+    
   }
 
   componentDidCatch() { //в случае ошибки
@@ -54,8 +55,20 @@ export default class App extends Component {
               </Button>
             </Col>
           </Row>
-          <CharPage />
-          <Row>
+          <CharacterPage>
+            <Col md='6'>
+              <ItemList
+                onItemSelected={this.onItemSelected}
+                getData={this.gotServise.getAllCharacters}
+                renderItem={(item) => item.name}
+              />
+            </Col>
+            <Col md='6'>
+              <ItemDetails
+                charId={this.state.selectedChar} />
+            </Col>
+          </CharacterPage>
+          <BooksPage>
             <Col md='6'>
               <ItemList
                 onItemSelected={this.onItemSelected}
@@ -64,11 +77,11 @@ export default class App extends Component {
               />
             </Col>
             <Col md='6'>
-              <CharDetails
-                charId={this.state.selectedChar} />
+              <ItemDetails
+                charId={this.state.selectedBook} />
             </Col>
-          </Row>
-          <Row>
+          </BooksPage>
+          <HousesPage>
             <Col md='6'>
               <ItemList
                 onItemSelected={this.onItemSelected}
@@ -77,11 +90,11 @@ export default class App extends Component {
               />
             </Col>
             <Col md='6'>
-              <CharDetails
+              <ItemDetails
                 charId={this.state.selectedChar}
               />
             </Col>
-          </Row>
+          </HousesPage>
         </Container>
       </>
     )

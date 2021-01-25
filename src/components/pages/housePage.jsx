@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-//import { Col, Row, Container, Button } from 'reactstrap';
 import gotServise from '../../servises/gotServise';
 import ErrorMessage from '../errorMessage';
 import ItemList from '../itemList';
-import CharDetails, {Field} from '../charDetails';
+import ItemDetails, {Field} from '../itemDetails';
 import RowBlock from '../rowBlock'
 
 
-export default class CharPage extends Component {
+export default class HousePage extends Component {
 
     gotServise = new gotServise();
+
     state = {
-        selectedChar: null, //какой перс выбран в данный момент
+        selectedHouse: null, //какой перс выбран в данный момент
         error: false
     }
     componentDidCatch() { //в случае ошибки
@@ -21,7 +21,7 @@ export default class CharPage extends Component {
     }
     onItemSelected = (id) => { //принимает id куда кликнули
         this.setState({ //уст состояние для текущего выбранного перс
-            selectedChar: id //кот уст через id
+            selectedHouse: id //кот уст через id
         })
     }
 
@@ -33,24 +33,26 @@ export default class CharPage extends Component {
         const itemList = (
             <ItemList
                 onItemSelected={this.onItemSelected}
-                getData={this.gotServise.getAllCharacters}
-                renderItem={({ name, gender }) => `${name} (${gender})`} />
+                getData={this.gotServise.getAllHouses}
+                renderItem={({ name }) => name} />
         )
 
-        const charDetails = (
-            <CharDetails
-                charId={this.state.selectedChar}
-                getData={this.gotServise.getCharacter} >
-                    <Field field = 'gender' label='Gender'/>
-                    <Field field = 'born' label='Born'/>
-                    <Field field = 'died' label='Died'/>
-            </CharDetails>
+        const itemDetails = (
+            <ItemDetails
+                itemId={this.state.selectedHouse}
+                getData={this.gotServise.getHouse} >
+                    <Field field = 'region' label='Region'/>
+                    <Field field = 'words' label='Words'/>
+                    <Field field = 'titles' label='Titles'/>
+                    <Field field = 'ancestralWeapons' label='Ancestral Weapons'/>
+
+            </ItemDetails>
         )
 
         return (
             <RowBlock
                 left={itemList}
-                right={charDetails}
+                right={itemDetails}
             />
         )
     }
