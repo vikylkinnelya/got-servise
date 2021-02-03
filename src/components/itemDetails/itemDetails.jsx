@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import gotServise from '../../servises/gotServise.js';
-import ErrorMessage from '../errorMessage';
-import Spinner from '../spinner';
 import './itemDetails.css';
 
 const Field = ({ item, field, label }) => {
@@ -17,7 +14,6 @@ const Field = ({ item, field, label }) => {
 export { Field }
 
 export default class ItemDetails extends Component {
-    gotServise = new gotServise();
     
     state = {
         item: null
@@ -38,7 +34,7 @@ export default class ItemDetails extends Component {
     updateItem() {
         const { itemId, getData } = this.props //деструктур что приходит из пропсов
         if (!itemId) {
-            return;
+            return; //ничего
         }
         getData(itemId) //обр к серверу по id
             .then((item) => { //получаем оьект с персонажем
@@ -52,6 +48,7 @@ export default class ItemDetails extends Component {
         }
         const { item } = this.state;
         const { name } = item;
+        
         return (
             <div className='char-details rounded'>
                 <h4>

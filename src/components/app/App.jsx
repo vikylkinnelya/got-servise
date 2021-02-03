@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { Col, Row, Container, Button } from 'reactstrap';
 import Header from '../header';
 import RandomChar from '../randomChar';
-import ItemList from '../itemList';
-import ItemDetails from '../itemDetails';
 import ErrorMessage from '../errorMessage';
-import {CharacterPage, BooksPage, HousesPage} from '../pages';
+import { CharacterPage, BooksPage, HousesPage, BooksItem } from '../pages';
 import gotServise from '../../servises/gotServise';
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import './app.css';
 
@@ -15,8 +14,8 @@ export default class App extends Component {
 
   state = {
     showRandomChar: true, //показывается ли блок со случ персонажами
-    error: false //показ ли окно с ошибкой
-    
+    error: false, //показ ли окно с ошибкой
+    selectedHouse: 20
   }
 
   componentDidCatch() { //в случае ошибки
@@ -40,7 +39,7 @@ export default class App extends Component {
     const char = this.state.showRandomChar ? <RandomChar /> : null;
 
     return (
-      <>
+      <Router><div className='app'>
         <Container>
           <Header />
         </Container>
@@ -55,48 +54,25 @@ export default class App extends Component {
               </Button>
             </Col>
           </Row>
-          <CharacterPage>
-            <Col md='6'>
-              <ItemList
-                onItemSelected={this.onItemSelected}
-                getData={this.gotServise.getAllCharacters}
-                renderItem={(item) => item.name}
-              />
-            </Col>
-            <Col md='6'>
-              <ItemDetails
-                charId={this.state.selectedChar} />
-            </Col>
-          </CharacterPage>
-          <BooksPage>
-            <Col md='6'>
-              <ItemList
-                onItemSelected={this.onItemSelected}
-                getData={this.gotServise.getAllBooks}
-                renderItem={(item) => item.name}
-              />
-            </Col>
-            <Col md='6'>
-              <ItemDetails
-                charId={this.state.selectedBook} />
-            </Col>
-          </BooksPage>
-          <HousesPage>
-            <Col md='6'>
-              <ItemList
-                onItemSelected={this.onItemSelected}
-                getData={this.gotServise.getAllHouses}
-                renderItem={(item) => item.name}
-              />
-            </Col>
-            <Col md='6'>
-              <ItemDetails
-                charId={this.state.selectedChar}
-              />
-            </Col>
-          </HousesPage>
+          <Route path='/' exact component={() => <h1>welcome to GOT data-base</h1>} />
+          <Route path='/characters' component={CharacterPage} />
+          <Route path='/houses' component={HousesPage} />
+          <Route path='/books' exact component={BooksPage} />
+          <Route path='/books/:id' render={
+            ({ match }) => {
+              //console.log(match) //как патч овпал с текущ адресом, хранит айди
+              //console.log(location) //состояние и положение роутера в текущ момент
+              //console.log(history) //для организации апи для перехода между стр
+              const { id } = match.params;
+              return <BooksItem
+                bookID={id} /> /* делает запрос к сервису, и вместо стейта использовал айди */
+            }
+          } />
         </Container>
-      </>
+      </div></Router>
+
+
+
     )
   }
 }

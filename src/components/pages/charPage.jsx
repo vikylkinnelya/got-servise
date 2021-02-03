@@ -10,6 +10,7 @@ import RowBlock from '../rowBlock'
 export default class CharPage extends Component {
 
     gotServise = new gotServise();
+    
     state = {
         selectedChar: null, //какой перс выбран в данный момент
         error: false
