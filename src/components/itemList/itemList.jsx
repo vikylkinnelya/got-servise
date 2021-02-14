@@ -1,45 +1,35 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import ErrorMessage from '../errorMessage';
 import Spinner from '../spinner';
 import './itemList.css';
+import PropTypes from 'prop-types';
+import gotServise from '../../servises/gotServise.js';
 
-export default class ItemList extends Component {
 
-    state = {
-        itemList: null,
-        error: false
-    }
+function ItemList({ getData, onItemSelected, renderItem }) {
 
-    componentDidMount() { //когда компонент будет проинициализирован
-        const {getData} = this.props; //берем из уровня выше из апп
-        
+    const [itemList, updateList] = useState([])
+    const [error, setError] = useState(false)
+
+    useEffect(() => {
         getData()
-            .then( (itemList) => {
-                this.setState({
-                    itemList, //обьект получит список всех персонажей
-                    error: false
-                })
+            .then((data) => {
+                updateList(data)
             })
-    }
 
-    componentDidCatch() {
-        this.setState({
-            itemList: null,
-            error: true
-        })
-    }
+    }, [])
 
-    renderItems(arr) { 
+    function renderItems(arr) {
         //передается в комп для рендеринга части его содержимого
         //еще больше контрол комп извне
         return arr.map((item) => {
-            const {id} = item
-            const label = this.props.renderItem(item);
+            const { id } = item
+            const label = renderItem(item);
             return (
                 <li
                     key={id} //если созд элемент реакта перебором, должен быть ключ
                     className='list-group-item'
-                    onClick={() => this.props.onItemSelected(id)}
+                    onClick={() => onItemSelected(id)}
                 >
                     {label}
                 </li>
@@ -47,22 +37,36 @@ export default class ItemList extends Component {
         })
     }
 
-    render() {
+    const items = renderItems(itemList); //здесь лежит верстка с необходимыми эл кот нужно поместить на страницет 
 
-        const { itemList, error } = this.state;
-
-        if (!itemList) { //если пока нет списка
-            return <Spinner /> //показываем загрузку
-        }
-        if (error) {
-            return <ErrorMessage/>
-        }
-        const items = this.renderItems(itemList);
-
-        return (
+    return (
+        <>
             <ul className='item-list list-group' >
+                {!itemList && <Spinner />}
                 {items}
             </ul>
-        )
-    }
+        </>
+    )
 }
+
+ItemList.defaultProps = {
+    onItemSelected: () => { }
+}
+
+ItemList.propTypes = {
+    onItemSelected: PropTypes.func,
+    //getData: PropTypes.arrayOf(PropTypes.object) //массив кот будет сост из обьектов
+}
+
+const withData = (View) => {
+
+    return (
+        <>
+            {View.error && <ErrorMessage />}
+            {!View.data && <Spinner />}
+            <View {...{View}} />
+        </>
+    )
+}
+const { getAllCharacters } = new gotServise();
+export default withData(ItemList, getAllCharacters)

@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import gotServise from '../../servises/gotServise.js';
 import Spinner from '../spinner';
 import ErrorMessage from '../errorMessage'
-
+import PropTypes from 'prop-types';
 
 const RandomBlock = styled.div`
     background-color: #fff;
@@ -18,65 +18,67 @@ const Term = styled.span`
     font - weight: bold;
 `
 
-export default class RandomChar extends Component {
+const { getCharacter } = new gotServise();
 
-    gotServise = new gotServise();
-    state = { //по умолчанию сначала
-        char: {},
-        loading: true,
-        error: false
-    }
+function RandomChar({ interval }) {
 
-    componentDidMount() { //когда все загрузится, начнётся это
-        this.updateChar(); 
-        this.timerId = setInterval(this.updateChar, 1500);
-    }
-    componentWillUnmount() { //
-        clearInterval(this.timerId)
-    }
+    const [char, setChar] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
 
-    updateChar = () => {
+    /* static defaultProps = {
+        interval: 15000
+    } */
+
+    useEffect(() => {
+        updateChar();
+        let timerId = setInterval(updateChar, interval); //обновление персонажа каждые н секунд, кот передаются извне
+        return (
+            clearInterval(timerId)
+        )
+    }, [])
+
+    const updateChar = () => {
         const id = Math.floor(Math.random() * 140 + 25); //от 25 до 140 
         //const id = 12345678950
-        this.gotServise.getCharacter(id) //promise
-            .then(this.onCharLoaded)
-            .catch(this.onError);
+        getCharacter(id) //promise
+            .then(onCharLoaded)
+            .catch(onError);
     }
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char,
-            loading: false //когда персонаж загрузился, меняется состояние загр
-        })
-    }
-    onError = (err) => {
-        this.setState({
-            error: true,
-            loading: false
-        })
+    const onCharLoaded = (char) => {
+        setChar(char)
+        setLoading(false)//когда персонаж загрузился, меняется состояние загр
     }
 
-
-    render() {
-
-        const { char, loading, error } = this.state; //деструктуризация
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? <Viev char={char}/> : null;
-        
-
-        return (
-            <RandomBlock className='random-block rounded'>
-                {errorMessage}
-                {spinner}
-                {content}
-            </RandomBlock>
-        )
+    const onError = () => {
+        setError(true)
+        setLoading(false)
     }
+
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error) ? <Viev char={char} /> : null;
+
+    return (
+        <RandomBlock className='random-block rounded'>
+            {errorMessage}
+            {spinner}
+            {content}
+        </RandomBlock>
+    )
+}
+
+RandomChar.defaultProps = {
+    interval: 1500
+}
+
+RandomChar.propTypes = {
+    interval: PropTypes.number
 }
 
 const Viev = ({ char }) => {
-    const {  name, gender, born, died, culture  } = char; //деструктуризация
+    const { name, gender, born, died, culture } = char; //деструктуризация
     return (
         <>
             <RandomBlockTitle>
@@ -104,3 +106,5 @@ const Viev = ({ char }) => {
     )
 
 }
+
+export default RandomChar
